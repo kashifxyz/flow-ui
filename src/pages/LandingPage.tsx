@@ -2,10 +2,10 @@ import { Link } from '@tanstack/react-router'
 import { Icon } from '../components/icons/Icon'
 import { ThemeSwitch } from '../components/ThemeSwitch'
 import { Wordmark } from '../components/Wordmark'
-import { useMe } from '../auth/useMe'
+import { useCurrentUser } from '../hooks/useCurrentUser'
 
 export function LandingPage() {
-  const me = useMe()
+  const me = useCurrentUser()
   const signedIn = Boolean(me.data)
 
   return (

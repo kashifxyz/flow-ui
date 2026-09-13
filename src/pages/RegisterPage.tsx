@@ -1,36 +1,35 @@
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import toast from 'react-hot-toast'
-import { ApiError, register } from '../lib/api'
+import { notifySuccess, notifyError } from '../lib/toast'
+import { ApiError } from '../api/error'
+import { useRegister } from '../hooks/useRegister'
 import { AuthLinks, AuthShell, PasswordField } from '../auth/AuthUI'
 import { preventSubmit } from '../lib/form'
+import { validateEmail, validateNewPassword } from '../lib/validation'
 
 export function RegisterPage() {
   const navigate = useNavigate()
-  const [error, setError] = useState('')
+  const register = useRegister()
 
   const form = useForm({
     defaultValues: { display_name: '', email: '', password: '' },
     onSubmit: async ({ value }) => {
-      setError('')
       try {
-        await register({
+        await register.mutateAsync({
           email: value.email,
           password: value.password,
           display_name: value.display_name,
         })
-        toast.success('Check your email to verify your account')
+        notifySuccess('Check your email to verify your account')
         await navigate({ to: '/login' })
       } catch (err) {
-        setError(err instanceof ApiError ? err.message : 'Could not create account')
+        notifyError(err instanceof ApiError ? err.message : 'Could not create account')
       }
     },
   })
 
   return (
     <AuthShell title="Create account" lead="Flow uses email and password only. Verify the address before signing in.">
-      {error ? <p className="auth-error">{error}</p> : null}
       <form onSubmit={preventSubmit(() => void form.handleSubmit())}>
         <form.Field name="display_name">
           {(field) => (
@@ -45,7 +44,7 @@ export function RegisterPage() {
             </label>
           )}
         </form.Field>
-        <form.Field name="email">
+        <form.Field name="email" validators={{ onChange: ({ value }) => validateEmail(value) }}>
           {(field) => (
             <label className="auth-field" htmlFor="register-email">
               <span>Email</span>
@@ -55,11 +54,15 @@ export function RegisterPage() {
                 autoComplete="email"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
               />
+              {field.state.meta.isTouched && field.state.meta.errors.length > 0 ? (
+                <p className="field-error">{field.state.meta.errors.join(', ')}</p>
+              ) : null}
             </label>
           )}
         </form.Field>
-        <form.Field name="password">
+        <form.Field name="password" validators={{ onChange: ({ value }) => validateNewPassword(value) }}>
           {(field) => (
             <PasswordField
               id="register-password"
@@ -67,6 +70,8 @@ export function RegisterPage() {
               autoComplete="new-password"
               value={field.state.value}
               onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={field.state.meta.isTouched ? field.state.meta.errors.join(', ') : undefined}
             />
           )}
         </form.Field>

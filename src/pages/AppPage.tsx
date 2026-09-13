@@ -1,15 +1,14 @@
 import { Navigate } from '@tanstack/react-router'
-import toast from 'react-hot-toast'
+import { notifySuccess } from '../lib/toast'
 import { Icon } from '../components/icons/Icon'
 import { ThemeSwitch } from '../components/ThemeSwitch'
 import { Wordmark } from '../components/Wordmark'
-import { useMe } from '../auth/useMe'
-import { logout } from '../lib/api'
-import { queryClient } from '../lib/query'
-import { meQueryKey } from '../auth/useMe'
+import { useCurrentUser } from '../hooks/useCurrentUser'
+import { useLogout } from '../hooks/useLogout'
 
 export function AppPage() {
-  const me = useMe()
+  const me = useCurrentUser()
+  const logout = useLogout()
   const user = me.data
 
   if (me.isLoading) {
@@ -55,12 +54,11 @@ export function AppPage() {
               className="btn btn-ghost"
               onClick={async () => {
                 try {
-                  await logout()
+                  await logout.mutateAsync()
                 } catch {
-                  // still clear local session
+                  // useLogout still clears the local session on failure
                 }
-                queryClient.setQueryData(meQueryKey, null)
-                toast.success('Signed out')
+                notifySuccess('Signed out')
               }}
             >
               <Icon name="LOGOUT" size={18} />

@@ -1,42 +1,41 @@
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import toast from 'react-hot-toast'
-import { ApiError, login, resendVerification } from '../lib/api'
-import { queryClient } from '../lib/query'
-import { meQueryKey } from '../auth/useMe'
+import { notifySuccess, notifyError } from '../lib/toast'
+import { ApiError } from '../api/error'
+import { useLogin } from '../hooks/useLogin'
+import { useResendVerification } from '../hooks/useResendVerification'
 import { AuthLinks, AuthShell, PasswordField } from '../auth/AuthUI'
 import { preventSubmit } from '../lib/form'
+import { validateEmail, validateRequired } from '../lib/validation'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const [error, setError] = useState('')
+  const login = useLogin()
+  const resendVerification = useResendVerification()
   const [unverifiedEmail, setUnverifiedEmail] = useState('')
 
   const form = useForm({
     defaultValues: { email: '', password: '' },
     onSubmit: async ({ value }) => {
-      setError('')
       setUnverifiedEmail('')
       try {
-        const user = await login({ email: value.email, password: value.password })
-        queryClient.setQueryData(meQueryKey, user)
-        toast.success('Signed in')
+        await login.mutateAsync({ email: value.email, password: value.password })
+        notifySuccess('Signed in')
         await navigate({ to: '/app' })
       } catch (err) {
         if (err instanceof ApiError && err.code === 'email_unverified') {
           setUnverifiedEmail(value.email)
         }
-        setError(err instanceof ApiError ? err.message : 'Sign in failed')
+        notifyError(err instanceof ApiError ? err.message : 'Sign in failed')
       }
     },
   })
 
   return (
     <AuthShell title="Sign in" lead="Use your email and password to continue.">
-      {error ? <p className="auth-error">{error}</p> : null}
       <form onSubmit={preventSubmit(() => void form.handleSubmit())}>
-        <form.Field name="email">
+        <form.Field name="email" validators={{ onChange: ({ value }) => validateEmail(value) }}>
           {(field) => (
             <label className="auth-field" htmlFor="login-email">
               <span>Email</span>
@@ -46,11 +45,15 @@ export function LoginPage() {
                 autoComplete="email"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
               />
+              {field.state.meta.isTouched && field.state.meta.errors.length > 0 ? (
+                <p className="field-error">{field.state.meta.errors.join(', ')}</p>
+              ) : null}
             </label>
           )}
         </form.Field>
-        <form.Field name="password">
+        <form.Field name="password" validators={{ onChange: ({ value }) => validateRequired('Password')(value) }}>
           {(field) => (
             <PasswordField
               id="login-password"
@@ -58,6 +61,8 @@ export function LoginPage() {
               autoComplete="current-password"
               value={field.state.value}
               onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={field.state.meta.isTouched ? field.state.meta.errors.join(', ') : undefined}
             />
           )}
         </form.Field>
@@ -67,10 +72,10 @@ export function LoginPage() {
             className="auth-submit secondary"
             onClick={async () => {
               try {
-                await resendVerification(unverifiedEmail)
-                toast.success('Verification email sent')
+                await resendVerification.mutateAsync(unverifiedEmail)
+                notifySuccess('Verification email sent')
               } catch (err) {
-                toast.error(err instanceof ApiError ? err.message : 'Could not resend')
+                notifyError(err instanceof ApiError ? err.message : 'Could not resend')
               }
             }}
           >

@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "generate:fonts": "node --experimental-strip-types generator/fonts.mts",
     "generate:icons": "node --experimental-strip-types generator/icons.mts",
-    "generate": "pnpm generate:fonts && pnpm generate:icons"
+    "generate:api": "openapi-typescript ../flow-server/openapi.yaml -o src/api/OPENAPIClient.ts",
+    "generate": "pnpm generate:fonts && pnpm generate:icons && pnpm generate:api"
   },
   "dependencies": {
     "@tanstack/charts": "^0.18.0",
@@ -30,6 +31,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "openapi-typescript": "^7.13.0",
     "oxlint": "^1.81.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"

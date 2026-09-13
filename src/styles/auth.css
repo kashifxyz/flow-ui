@@ -7,7 +7,6 @@
 .auth-aside {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 1.5rem 2rem 2rem;
   background:
     linear-gradient(var(--grid) 1px, transparent 1px),
@@ -15,6 +14,69 @@
     var(--bg);
   background-size: 48px 48px, 48px 48px, auto;
   border-right: 1px solid var(--border);
+}
+
+.auth-graphic {
+  position: relative;
+  flex: 1;
+  min-height: 12rem;
+  margin: 1.5rem 0;
+}
+
+.auth-graphic-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-graphic-lines line {
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.graphic-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border-radius: 10px;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 12px 24px var(--shadow);
+  animation: auth-graphic-float 6s ease-in-out infinite;
+}
+
+.graphic-hub {
+  z-index: 1;
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  animation: none;
+}
+
+@keyframes auth-graphic-float {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graphic-node {
+    animation: none;
+  }
 }
 
 .auth-aside h2 {
@@ -72,6 +134,12 @@
 .auth-field span {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.field-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.78rem;
 }
 
 .auth-field input {

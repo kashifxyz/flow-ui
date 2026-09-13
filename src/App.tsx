@@ -10,7 +10,7 @@ const App = () => {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <Toaster position="top-center" />
+        <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
       </QueryClientProvider>
     </ThemeProvider>
   )
