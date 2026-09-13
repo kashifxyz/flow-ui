@@ -1,0 +1,101 @@
+.app-shell {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 16.5rem minmax(0, 1fr);
+  background: var(--bg);
+}
+
+.app-rail {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, var(--bg));
+  padding: 0.9rem 0.75rem;
+}
+
+.app-rail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.35rem 0.85rem;
+}
+
+.app-space {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  color: var(--text-muted);
+}
+
+.app-space.active {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-bar h1 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.app-user {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.app-canvas {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background-image:
+    radial-gradient(circle at 1px 1px, var(--grid) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+.app-empty {
+  width: min(32rem, 100%);
+  text-align: center;
+}
+
+.app-empty h2 {
+  margin: 0.4rem 0 0.5rem;
+  letter-spacing: -0.04em;
+}
+
+.app-empty p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 800px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .app-rail {
+    display: none;
+  }
+}

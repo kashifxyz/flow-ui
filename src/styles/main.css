@@ -1,3 +1,6 @@
 @import './fonts/fonts.css';
 @import './base/base.css';
 @import './themes/themes.css';
+@import './landing.css';
+@import './auth.css';
+@import './app.css';
