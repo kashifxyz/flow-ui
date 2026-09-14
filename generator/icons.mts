@@ -74,6 +74,19 @@ const ICON_MAP: Record<string, string> = {
   EYE: 'visibility',
   EYE_OFF: 'visibility_off',
   ALERT: 'warning',
+  BOLD: 'format_bold',
+  ITALIC: 'format_italic',
+  STRIKETHROUGH: 'format_strikethrough',
+  HEADING_1: 'format_h1',
+  HEADING_2: 'format_h2',
+  HEADING_3: 'format_h3',
+  BULLET_LIST: 'format_list_bulleted',
+  ORDERED_LIST: 'format_list_numbered',
+  QUOTE: 'format_quote',
+  CODE_BLOCK: 'code',
+  DIVIDER: 'horizontal_rule',
+  UNDO: 'undo',
+  REDO: 'redo',
 };
 
 /**

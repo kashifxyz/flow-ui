@@ -14,7 +14,7 @@ export function ToastCard({
   onDismiss: () => void
 }) {
   return (
-    <div className={`toast-card toast-${kind} ${visible ? 'toast-in' : 'toast-out'}`} role="status">
+    <div className={`toast-card toast-${kind} ${visible ? 'toast-in' : 'toast-out'}`} role={kind === 'error' ? 'alert' : 'status'}>
       <span className="toast-icon">
         <Icon name={kind === 'success' ? 'CHECK' : 'ALERT'} size={15} />
       </span>

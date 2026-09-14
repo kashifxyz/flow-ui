@@ -1,5 +1,5 @@
 import { useForm } from '@tanstack/react-form'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
 import { notifySuccess, notifyError } from '../lib/toast'
 import { ApiError } from '../api/error'
@@ -11,6 +11,7 @@ import { validateEmail, validateRequired } from '../lib/validation'
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { next } = useSearch({ from: '/login' })
   const login = useLogin()
   const resendVerification = useResendVerification()
   const [unverifiedEmail, setUnverifiedEmail] = useState('')
@@ -22,7 +23,11 @@ export function LoginPage() {
       try {
         await login.mutateAsync({ email: value.email, password: value.password })
         notifySuccess('Signed in')
-        await navigate({ to: '/app' })
+        if (next) {
+          window.location.assign(next)
+        } else {
+          await navigate({ to: '/app' })
+        }
       } catch (err) {
         if (err instanceof ApiError && err.code === 'email_unverified') {
           setUnverifiedEmail(value.email)

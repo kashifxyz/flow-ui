@@ -348,7 +348,27 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get the current user's full profile */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Profile"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -386,6 +406,60 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/users/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change the current user's password (requires the current password; keeps this session, revokes all others) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangePasswordRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OKResponse"];
+                    };
+                };
+                /** @description Invalid request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Current password incorrect */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/users/me/preferences": {
@@ -971,6 +1045,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspaces/{workspaceID}/invites/{inviteID}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept a pending invite addressed to the current user's email (no token needed — for the in-app "you've been invited" banner) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceID: components["parameters"]["workspaceID"];
+                    inviteID: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OKResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/invites/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List pending invites addressed to the current user's email, across all workspaces */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyInvite"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/invites/{token}/accept": {
         parameters: {
             query?: never;
@@ -980,7 +1132,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Accept an invite as the current user */
+        /** Accept an invite as the current user, via the emailed link's token */
         post: {
             parameters: {
                 query?: never;
@@ -6329,11 +6481,11 @@ export interface components {
         };
         User: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: email */
-            email?: string;
-            display_name?: string;
-            email_verified?: boolean;
+            email: string;
+            display_name: string;
+            email_verified: boolean;
         };
         RegisterRequest: {
             /** Format: email */
@@ -6359,22 +6511,26 @@ export interface components {
         };
         Profile: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: email */
-            email?: string;
-            display_name?: string;
-            given_name?: string;
-            family_name?: string;
+            email: string;
+            display_name: string;
+            given_name: string;
+            family_name: string;
             username?: string | null;
-            locale?: string;
-            timezone?: string;
-            week_starts_on?: number;
-            date_format?: string;
-            time_format?: string;
+            locale: string;
+            timezone: string;
+            week_starts_on: number;
+            date_format: string;
+            time_format: string;
             /** @enum {string} */
-            theme?: "system" | "light" | "dark" | "amoled";
-            bio?: string;
+            theme: "system" | "light" | "dark" | "amoled";
+            bio: string;
             avatar_object_key?: string | null;
+        };
+        ChangePasswordRequest: {
+            current_password: string;
+            new_password: string;
         };
         UpdateProfileRequest: {
             display_name?: string;
@@ -6408,36 +6564,36 @@ export interface components {
         };
         Session: {
             /** Format: uuid */
-            id?: string;
-            user_agent?: string;
-            ip?: string;
-            country?: string;
+            id: string;
+            user_agent: string;
+            ip: string;
+            country: string;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
             /** Format: date-time */
-            last_seen_at?: string;
+            last_seen_at: string;
             /** Format: date-time */
-            expires_at?: string;
-            current?: boolean;
+            expires_at: string;
+            current: boolean;
         };
         Workspace: {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            name: string;
             slug?: string | null;
-            description?: string;
+            description: string;
             icon?: string | null;
             color?: string | null;
-            status?: string;
-            settings?: Record<string, never>;
+            status: string;
+            settings: Record<string, never>;
             /** Format: uuid */
             owner_user_id?: string | null;
-            public_sharing_enabled?: boolean;
-            guest_access_enabled?: boolean;
+            public_sharing_enabled: boolean;
+            guest_access_enabled: boolean;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
             /** Format: date-time */
-            updated_at?: string;
+            updated_at: string;
         };
         CreateWorkspaceRequest: {
             name: string;
@@ -6466,24 +6622,24 @@ export interface components {
         };
         Member: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: uuid */
-            user_id?: string;
+            user_id: string;
             /** Format: email */
-            email?: string;
-            display_name?: string;
+            email: string;
+            display_name: string;
             /** @enum {string} */
-            role?: "owner" | "admin" | "member" | "guest";
+            role: "owner" | "admin" | "member" | "guest";
             /** Format: uuid */
             role_id?: string | null;
             /** @enum {string} */
-            seat_type?: "full" | "guest";
+            seat_type: "full" | "guest";
             /** @enum {string} */
-            status?: "active" | "suspended" | "removed";
+            status: "active" | "suspended" | "removed";
             /** Format: date-time */
             joined_at?: string | null;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
         };
         AddMemberRequest: {
             /** Format: email */
@@ -6501,21 +6657,34 @@ export interface components {
         };
         Invite: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: email */
-            email?: string;
-            role?: string;
+            email: string;
+            role: string;
             /** Format: uuid */
             group_id?: string | null;
-            seat_type?: string;
+            seat_type: string;
             /** Format: date-time */
-            expires_at?: string;
+            expires_at: string;
             /** Format: date-time */
             accepted_at?: string | null;
             /** Format: date-time */
             revoked_at?: string | null;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
+        };
+        MyInvite: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            workspace_id: string;
+            workspace_name: string;
+            role: string;
+            invited_by_name?: string | null;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            created_at: string;
         };
         CreateInviteRequest: {
             /** Format: email */
@@ -6529,13 +6698,13 @@ export interface components {
         };
         Role: {
             /** Format: uuid */
-            id?: string;
-            name?: string;
-            description?: string;
-            is_system?: boolean;
+            id: string;
+            name: string;
+            description: string;
+            is_system: boolean;
             permissions?: Record<string, never>;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
         };
         CreateRoleRequest: {
             name: string;
@@ -6590,18 +6759,18 @@ export interface components {
         };
         Space: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: uuid */
-            workspace_id?: string;
-            name?: string;
-            description?: string;
+            workspace_id: string;
+            name: string;
+            description: string;
             icon?: string | null;
-            is_private?: boolean;
-            is_default?: boolean;
+            is_private: boolean;
+            is_default: boolean;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
             /** Format: date-time */
-            updated_at?: string;
+            updated_at: string;
         };
         CreateSpaceRequest: {
             name: string;
@@ -6652,7 +6821,9 @@ export interface components {
             description?: string;
             icon?: string | null;
             rank?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             /** Format: int64 */
             version?: number;
             /** Format: uuid */
@@ -6670,7 +6841,9 @@ export interface components {
             title?: string;
             description?: string;
             icon?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             rank?: string;
             /** Format: uuid */
             space_id?: string;
@@ -6719,26 +6892,28 @@ export interface components {
         };
         Page: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: uuid */
-            workspace_id?: string;
+            workspace_id: string;
             /** Format: uuid */
             space_id?: string | null;
             /** Format: uuid */
             parent_id?: string | null;
-            title?: string;
-            description?: string;
+            title: string;
+            description: string;
             icon?: string | null;
-            rank?: string;
-            props?: Record<string, never>;
+            rank: string;
+            props: {
+                [key: string]: unknown;
+            };
             /** Format: int64 */
-            version?: number;
+            version: number;
             /** Format: date-time */
             archived_at?: string | null;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
             /** Format: date-time */
-            updated_at?: string;
+            updated_at: string;
         };
         CreatePageRequest: {
             title: string;
@@ -6747,13 +6922,17 @@ export interface components {
             /** Format: uuid */
             space_id?: string;
             icon?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         UpdatePageRequest: {
             title?: string;
             description?: string;
             icon?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         BlockFlavour: {
             flavour?: string;
@@ -6770,7 +6949,9 @@ export interface components {
             page_id?: string;
             flavour?: string | null;
             rank?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             /** Format: int64 */
             version?: number;
             /** Format: date-time */
@@ -6781,11 +6962,15 @@ export interface components {
         CreateBlockRequest: {
             flavour: string;
             rank?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         UpdateBlockRequest: {
             flavour?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             rank?: string;
         };
         ReorderBlocksRequest: {
@@ -6987,7 +7172,9 @@ export interface components {
             title?: string;
             description?: string;
             icon?: string | null;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             /** Format: int64 */
             version?: number;
             /** Format: date-time */
@@ -7003,13 +7190,17 @@ export interface components {
             /** Format: uuid */
             space_id?: string;
             icon?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         UpdateProjectRequest: {
             title?: string;
             description?: string;
             icon?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         Task: {
             /** Format: uuid */
@@ -7036,12 +7227,16 @@ export interface components {
             title: string;
             description?: string;
             rank?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
         };
         UpdateTaskRequest: {
             title?: string;
             description?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             rank?: string;
         };
         MoveTaskRequest: {
@@ -7058,7 +7253,9 @@ export interface components {
             space_id?: string | null;
             title?: string;
             description?: string;
-            props?: Record<string, never>;
+            props?: {
+                [key: string]: unknown;
+            };
             /** Format: int64 */
             version?: number;
             /** Format: date-time */

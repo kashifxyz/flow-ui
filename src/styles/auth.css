@@ -4,6 +4,10 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(22rem, 28rem);
 }
 
+.auth-shell-solo {
+  grid-template-columns: 1fr;
+}
+
 .auth-aside {
   display: flex;
   flex-direction: column;
@@ -210,6 +214,15 @@
 .auth-links a {
   color: var(--accent);
   text-decoration: none;
+}
+
+/* .auth-submit as a Link (e.g. the invite-accept flow) must keep its own
+   button text color — the rule above would otherwise paint it accent-on-accent. */
+.auth-links a.auth-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-text);
 }
 
 .auth-error {
